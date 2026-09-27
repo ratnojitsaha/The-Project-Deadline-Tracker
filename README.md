@@ -150,139 +150,144 @@ The application follows a simple client-server architecture.
                     │    database.db       │
                     └──────────────────────┘
 
-The frontend communicates with the Express backend through REST API
-endpoints.
+### The frontend communicates with the Express backend through REST API endpoints.
 
-The backend handles:
 
-Request routing
+### Backend Responsibilities
 
-Request validation
+- Request routing
+- Request validation
+- Business logic
+- Database operations
+- Error handling
+- Activity log creation
 
-Business logic
+### Frontend Responsibilities
 
-Database operations
+- UI rendering
+- User interaction
+- API communication
+- Loading, error, and success states
+- Overdue project highlighting
+- Form handling
 
-Error handling
+---
 
-Activity log creation
+# Backend Architecture
 
-The frontend handles:
+The backend follows an MVC-style architecture.
 
-UI rendering
+```text
+Client Request
+      │
+      ▼
+   Routes
+      │
+      ▼
+ Middleware
+      │
+      ├── Validation
+      │
+      ▼
+ Controllers
+      │
+      ▼
+    Models
+      │
+      ▼
+ SQLite Database
+```
 
-User interaction
+## Routes
 
-API communication
+Routes define the API endpoints and connect requests to controllers.
 
-Loading/error/success states
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/projects` | Get all projects |
+| POST | `/api/project-update` | Update a project and create a log |
+| GET | `/api/logs` | Get the latest 10 workflow logs |
 
-Overdue project highlighting
+---
 
-Form handling
-
-Backend Architecture
-
-The backend follows an MVC-style structure.
-
-Request
-   │
-   ▼
-Routes
-   │
-   ▼
-Middleware
-   │
-   ├── Validation
-   │
-   ▼
-Controller
-   │
-   ▼
-Model
-   │
-   ▼
-SQLite Database
-
-Routes
-
-Routes define the API endpoints and connect them to controllers.
-
-GET  /api/projects
-POST /api/project-update
-GET  /api/logs
-
-Controllers
+## Controllers
 
 Controllers contain the application logic for each request.
 
 For example, when a project is updated:
 
+```text
 POST /api/project-update
-        │
-        ▼
-Validate request with Zod
-        │
-        ▼
-Find project
-        │
-        ▼
-Update project status
-        │
-        ▼
-Create activity log
-        │
-        ▼
-Return updated project
+          │
+          ▼
+   Validate with Zod
+          │
+          ▼
+    Find the project
+          │
+          ▼
+  Update project status
+          │
+          ▼
+    Create activity log
+          │
+          ▼
+   Return updated project
+```
 
-Models
+---
 
-Models contain database operations.
+## Models
 
-projectModel.js handles:
+Models handle database operations.
 
-Fetching all projects
+### `projectModel.js`
 
-Finding a project by ID
+Responsible for:
 
-Updating project status
+- Fetching all projects
+- Finding a project by ID
+- Updating project status
 
-logModel.js handles:
+### `logModel.js`
 
-Creating activity logs
+Responsible for:
 
-Fetching the latest 10 logs
+- Creating activity logs
+- Fetching the latest 10 logs
 
-Middleware
+---
+
+## Middleware
 
 The backend uses middleware for:
 
-Request body parsing
+- JSON request body parsing
+- CORS
+- Zod request validation
+- Unknown route handling
+- Centralized error handling
 
-CORS
+---
 
-Zod request validation
+# Database
 
-Unknown route handling
+SQLite is used because the application has a small relational data model and does not require a separate database server.
 
-Centralized error handling
+## Projects Table
 
-Database
-
-SQLite is used as the database because the application has a small data
-model and does not require a separate database server.
-
-Projects Table
-
+```text
 projects
 ├── id
 ├── project_name
 ├── deadline_date
 ├── status
 └── updated_at
+```
 
-Logs Table
+## Logs Table
 
+```text
 logs
 ├── id
 ├── project_id
@@ -290,20 +295,25 @@ logs
 ├── status
 ├── notes
 └── updated_at
+```
 
-The logs.project_id column references the project that generated the
-activity.
+The `logs.project_id` column references the project that generated the activity.
 
-API Endpoints
+---
 
-Get Projects
+# API Endpoints
 
+## 1. Get Projects
+
+```http
 GET /api/projects
+```
 
 Returns all projects ordered by deadline.
 
-Example
+### Example Response
 
+```json
 [
   {
     "id": 1,
@@ -313,321 +323,399 @@ Example
     "updated_at": "2026-09-27 14:30:00"
   }
 ]
+```
 
-Update Project
+---
 
+## 2. Update Project
+
+```http
 POST /api/project-update
+```
 
 Updates a project's status and creates a corresponding workflow log.
 
-Request Body
+### Request Body
 
+```json
 {
   "project_id": 1,
   "status": "Completed",
   "notes": "Final delivery completed successfully."
 }
+```
 
-Supported Statuses
+### Supported Statuses
 
+```text
 In Progress
 Completed
+```
 
-Get Logs
+---
 
+## 3. Get Logs
+
+```http
 GET /api/logs
+```
 
 Returns the 10 most recent workflow entries.
 
-Frontend Architecture
+---
 
-The frontend is divided into reusable components rather than placing the
-entire UI inside App.jsx.
+# Frontend Architecture
 
+The frontend is divided into reusable components instead of placing the entire UI inside `App.jsx`.
+
+```text
 App
 │
 ├── Header
-│
 ├── Alert
-│
 ├── ProjectDashboard
-│
 ├── ProjectUpdateForm
-│
 └── HistoryFeed
+```
 
-Supporting logic is separated into:
+Supporting application logic is separated into custom hooks, services, and utility functions.
 
-hooks/
+## Custom Hook
 
-useProjects.js
+### `hooks/useProjects.js`
 
 Responsible for:
 
-Loading projects
+- Loading projects
+- Loading logs
+- Saving project updates
+- Managing loading states
+- Managing error states
+- Managing success states
 
-Loading logs
+---
 
-Saving project updates
+## API Services
 
-Loading states
-
-Error states
-
-Success states
-
-services/
-
-projectService.js
+### `services/projectService.js`
 
 Responsible for communicating with the backend API.
 
-This keeps API calls separate from UI components.
+This keeps API requests separate from UI components.
 
-utils/
+---
 
-dateUtils.js
+## Utility Functions
+
+### `utils/dateUtils.js`
 
 Responsible for:
 
-Date formatting
+- Date formatting
+- Determining the current date
+- Detecting overdue projects
 
-Determining the current date
+---
 
-Detecting overdue projects
+# Overdue Project Logic
 
-Overdue Project Logic
+A project is considered overdue when both conditions are true:
 
-A project is considered overdue when:
-
-status != Completed
+```text
+status != "Completed"
 AND
 deadline_date < today's date
+```
 
 Overdue projects are highlighted in red on the dashboard.
 
-A project with today's deadline is not considered overdue.
+A project with today's deadline is **not** considered overdue.
 
-A completed project is never marked overdue, even if its deadline
-has passed.
+A completed project is **never** marked overdue, even if its deadline has passed.
 
-Local Installation
+---
 
-Requirements
+# Local Installation
+
+## Requirements
 
 Make sure the following are installed:
 
-Node.js
+- Node.js
+- npm
+- Git
 
-npm
+---
 
-Git
+## 1. Clone the Repository
 
-1. Clone the Repository
-
+```bash
 git clone <YOUR_GITHUB_REPOSITORY_URL>
 cd project-deadline-tracker
+```
 
-Backend Setup
+---
 
-Open a terminal inside the backend directory:
+# Backend Setup
 
+Open a terminal inside the `backend` directory:
+
+```bash
 cd backend
+```
 
 Install dependencies:
 
+```bash
 npm install
+```
 
-Create a .env file:
+Create a `.env` file:
 
+```env
 PORT=5000
 NODE_ENV=development
+```
 
 Start the backend in development mode:
 
+```bash
 npm run dev
+```
 
 Or start it normally:
 
+```bash
 npm start
+```
 
 The backend will run at:
 
+```text
 http://localhost:5000
+```
 
-Frontend Setup
+---
+
+# Frontend Setup
 
 Open another terminal:
 
+```bash
 cd frontend
+```
 
 Install dependencies:
 
+```bash
 npm install
+```
 
-Create a .env file:
+Create a `.env` file:
 
+```env
 VITE_API_URL=http://localhost:5000
+```
 
 Start the frontend:
 
+```bash
 npm run dev
+```
 
 Vite will provide a local URL, usually:
 
+```text
 http://localhost:5173
+```
 
-Open that URL in your browser.
+Open the URL provided by Vite in your browser.
 
-Seeding the Database
+---
+
+# Seeding the Database
 
 The project includes a seed script for adding sample projects.
 
-From the backend directory:
+From the `backend` directory:
 
+```bash
 node seed/seed.js
+```
 
 The database file is:
 
+```text
 backend/database.db
+```
 
-The database and tables are automatically created when the backend
-starts.
+The database tables are automatically created when the backend starts.
 
-Important
-
-The seed script inserts records. Running it multiple times can create
-duplicate projects.
+> **Important:** The seed script inserts records. Running it multiple times can create duplicate projects.
 
 If a clean database is required during local development:
 
-Stop the backend.
+1. Stop the backend.
+2. Delete `backend/database.db`.
+3. Start the backend once.
+4. Run the seed script once.
 
-Delete backend/database.db.
+---
 
-Start the backend once.
+# Environment Variables
 
-Run the seed script once.
+## Backend
 
-Environment Variables
+File:
 
-Backend
-
+```text
 backend/.env
+```
 
+```env
 PORT=5000
 NODE_ENV=development
+```
 
-The production server on Render provides its own PORT.
+The production server on Render provides its own `PORT` environment variable.
 
-Frontend
+---
 
+## Frontend
+
+File:
+
+```text
 frontend/.env
+```
 
+```env
 VITE_API_URL=http://localhost:5000
+```
 
-For production, this value is changed to the deployed Render backend
-URL.
+For production, this value should point to the deployed Render backend.
 
 Example:
 
+```env
 VITE_API_URL=https://your-backend.onrender.com
+```
 
-.env files are excluded from Git using .gitignore.
+`.env` files are excluded from Git using `.gitignore`.
 
-Production Deployment
+---
 
-The application is split into two deployments.
+# Production Deployment
 
-GitHub Repository
-       │
-       ├──────────────► Render
-       │                 │
-       │                 └── Express API
-       │
-       └──────────────► Vercel
-                         │
-                         └── React Frontend
+The application is split into two deployments:
 
-Backend --- Render
+```text
+                    GitHub Repository
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+              ▼                         ▼
+           Render                    Vercel
+              │                         │
+              ▼                         ▼
+       Express REST API           React Frontend
+              │
+              ▼
+           SQLite
+```
 
-The backend is deployed as a Render Web Service.
+---
 
-Render Configuration
+# Backend — Render
 
-Root Directory
+The backend is deployed as a **Render Web Service**.
 
-backend
+### Render Configuration
 
-Build Command
+| Setting | Value |
+|---|---|
+| Root Directory | `backend` |
+| Build Command | `npm install` |
+| Start Command | `npm start` |
 
-npm install
-
-Start Command
-
-npm start
-
-Environment Variables
+### Environment Variables
 
 Add:
 
+```text
 NODE_ENV=production
+```
 
-Render automatically provides the PORT environment variable.
+Render automatically provides the `PORT` environment variable.
 
 The deployed backend will have a URL similar to:
 
+```text
 https://your-backend-name.onrender.com
+```
 
-Frontend --- Vercel
+---
+
+# Frontend — Vercel
 
 The React/Vite frontend is deployed to Vercel.
 
-Vercel Configuration
+### Vercel Configuration
 
-Root Directory
-
-frontend
+| Setting | Value |
+|---|---|
+| Root Directory | `frontend` |
+| Framework | Vite |
 
 Vercel automatically detects the Vite project.
 
-Set the following environment variable:
+### Environment Variable
 
+Set:
+
+```text
 VITE_API_URL=https://your-backend-name.onrender.com
+```
 
 After deployment, Vercel provides the public frontend URL.
 
-Frontend URL
+### Frontend URL
 
+```text
 ____________________________________________
+```
 
-Production Request Flow
+---
 
-When an evaluator opens the Vercel URL:
+# Production Request Flow
 
+When an evaluator opens the Vercel application:
+
+```text
 Browser
    │
-   │ GET /api/projects
    ▼
-Vercel React App
+Vercel React Application
    │
-   │ HTTP Request
+   │  HTTP Request
    ▼
 Render Express API
    │
-   │ SQL Query
+   │  SQL Query
    ▼
-SQLite database
+SQLite Database
    │
-   │ JSON Response
+   │  JSON Response
    ▼
 Render API
    │
    ▼
 React Dashboard
+```
 
-When the evaluator submits an update:
+When an evaluator submits a project update:
 
+```text
 Update Form
      │
      ▼
@@ -641,99 +729,85 @@ Project Controller
      │
      ├── Update Project
      │
-     └── Create Log
+     └── Create Activity Log
      │
      ▼
-SQLite
+SQLite Database
      │
      ▼
-Updated Project Response
+Updated Response
      │
      ▼
-Frontend Refreshes
+Frontend Refresh
+     │
      ├── Project Dashboard
+     │
      └── History Feed
+```
 
-Error Handling
+---
+
+# Error Handling
 
 The backend uses centralized error handling.
 
-Invalid Route
+## Invalid Route
 
-Returns:
+Example:
 
+```http
+GET /api/example
+```
+
+Response:
+
+```json
 {
   "message": "Route /api/example not found"
 }
+```
 
-Invalid Request
+## Invalid Request
 
-Zod validates the project update payload before it reaches the
-controller.
+Zod validates the project update payload before it reaches the controller.
 
-Example validation errors are returned with the affected field and
-message.
+Validation errors include the affected field and an explanatory message.
 
-Server Error
+## Server Error
 
-Unexpected backend errors are handled by the centralized error
-middleware.
+Unexpected backend errors are handled by the centralized error middleware.
 
-Why These Technologies?
+---
 
-React
+# Why These Technologies?
 
-Used to create a component-based and responsive dashboard UI.
+| Technology | Reason |
+|---|---|
+| React | Component-based and responsive dashboard UI |
+| Express | Lightweight REST API and routing |
+| SQLite | Simple relational database suitable for the application's scope |
+| better-sqlite3 | Simple SQLite access from Node.js |
+| Zod | Schema-based API request validation |
+| Vite | Fast frontend development and production builds |
+| Vercel | Frontend hosting and public application URL |
+| Render | Node.js/Express backend hosting |
 
-Express
+---
 
-Provides a lightweight REST API and clean routing structure.
-
-SQLite
-
-Suitable for the small relational dataset required by the assignment
-without requiring a separate database server.
-
-better-sqlite3
-
-Provides synchronous and simple SQLite database access for the Node.js
-backend.
-
-Zod
-
-Provides schema-based validation for incoming API data.
-
-Vite
-
-Provides a fast development environment and production build system for
-the React application.
-
-Vercel
-
-Used to host the frontend and provide a public URL for the dashboard.
-
-Render
-
-Used to host the Node.js/Express backend API.
-
-Development Principles
+# Development Principles
 
 The application intentionally avoids unnecessary complexity.
 
-There is no authentication, authorization, global state library, ORM, or
-external database service because these are not required for the
-application's scope.
+There is no authentication, authorization, global state library, ORM, or external database service because these are not required for the application's scope.
 
 The code is separated into clear responsibilities:
 
-UI
+```text
+Frontend
 │
 ├── Components
-│
-├── Custom Hook
-│
-├── API Service
-│
+├── Custom Hooks
+├── API Services
 └── Utility Functions
 
 Backend
@@ -743,12 +817,15 @@ Backend
 ├── Controllers
 ├── Models
 └── Database
+```
 
 This keeps the application easy to understand, test, modify, and deploy.
 
-Author
+---
 
-Ratnojit Saha
-11900122167
-B.Tech Computer Science & Engineering, 2026 passout
+# Author
+
+**Ratnojit Saha**
+
+B.Tech Computer Science & Engineering — 2026  
 Siliguri Institute of Technology
