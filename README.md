@@ -85,37 +85,31 @@ Backend: Render
 
 Database: SQLite
 
-Project Structure
+# Project Structure
 
+```text
 project-deadline-tracker/
 │
 ├── backend/
 │   ├── config/
 │   │   └── database.js
-│   │
 │   ├── controllers/
 │   │   ├── projectController.js
 │   │   └── logController.js
-│   │
 │   ├── middleware/
 │   │   ├── errorMiddleware.js
 │   │   ├── notFoundMiddleware.js
 │   │   └── validationMiddleware.js
-│   │
 │   ├── models/
 │   │   ├── projectModel.js
 │   │   └── logModel.js
-│   │
 │   ├── routes/
 │   │   ├── projectRoutes.js
 │   │   └── logRoutes.js
-│   │
 │   ├── validators/
 │   │   └── projectValidator.js
-│   │
 │   ├── seed/
 │   │   └── seed.js
-│   │
 │   ├── database.db
 │   ├── .env
 │   ├── app.js
@@ -130,26 +124,23 @@ project-deadline-tracker/
 │   │   │   ├── ProjectUpdateForm.jsx
 │   │   │   ├── HistoryFeed.jsx
 │   │   │   └── Alert.jsx
-│   │   │
 │   │   ├── hooks/
 │   │   │   └── useProjects.js
-│   │   │
 │   │   ├── services/
 │   │   │   └── projectService.js
-│   │   │
 │   │   ├── utils/
 │   │   │   └── dateUtils.js
-│   │   │
 │   │   ├── App.jsx
 │   │   ├── App.css
 │   │   ├── index.css
 │   │   └── main.jsx
-│   │
 │   ├── .env
 │   ├── package.json
 │   └── ...
 │
-└── .gitignore
+├── .gitignore
+└── README.md
+```
 
 Overall Architecture
 
