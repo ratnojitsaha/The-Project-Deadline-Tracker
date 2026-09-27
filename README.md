@@ -19,71 +19,55 @@ ____________________________________________
 
 Backend API: Hosted on Render
 
-Features
+## Features
 
-View all projects and their current delivery status
+- View all projects and their current delivery status
+- Display project deadlines
+- Automatically highlight overdue projects
+- Update project status between `In Progress` and `Completed`
+- Add tracking notes to project updates
+- Maintain a workflow activity/history log
+- Display the 10 most recent workflow entries
+- Automatically refresh project data and history after updates
+- Validate API requests using Zod
+- Centralized 404 and error handling
+- Responsive UI for desktop and mobile
+- Separate frontend and backend deployment
+- SQLite database for project and activity data
 
-Display project deadlines
+---
 
-Automatically highlight overdue projects
+## Tech Stack
 
-Mark projects as In Progress or Completed
+### Frontend
 
-Add tracking notes to project updates
+| Technology | Purpose |
+|---|---|
+| React | UI development |
+| Vite | Frontend development and build tooling |
+| JavaScript | Application logic |
+| CSS | Styling and responsive design |
+| Fetch API | Backend API communication |
 
-Maintain a workflow activity/history log
+### Backend
 
-Display the 10 most recent workflow entries
+| Technology | Purpose |
+|---|---|
+| Node.js | Backend runtime |
+| Express.js | REST API and routing |
+| SQLite | Relational database |
+| better-sqlite3 | SQLite database driver |
+| Zod | Request validation |
+| CORS | Cross-origin API access |
+| dotenv | Environment variable management |
 
-Refresh project status and activity history after an update
+### Deployment
 
-Input validation using Zod
-
-Centralized error and 404 handling
-
-Responsive UI for desktop and mobile
-
-Separate frontend and backend deployment
-
-SQLite database for simple local and hosted persistence
-
-Tech Stack
-
-Frontend
-
-React
-
-Vite
-
-JavaScript
-
-CSS
-
-Fetch API
-
-Backend
-
-Node.js
-
-Express.js
-
-SQLite
-
-better-sqlite3
-
-Zod
-
-CORS
-
-dotenv
-
-Deployment
-
-Frontend: Vercel
-
-Backend: Render
-
-Database: SQLite
+| Component | Platform |
+|---|---|
+| Frontend | Vercel |
+| Backend | Render |
+| Database | SQLite |
 
 # Project Structure
 
