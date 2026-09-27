@@ -12,10 +12,10 @@ Live Application
 Note : If you want to test APIs from postman directly without installing or visiting the hosted frontend. Please check with the hosted backend url directly. 
 
 Frontend:
-____________________________________________
+**[https://the-project-deadline-tracker.vercel.app/](https://the-project-deadline-tracker.vercel.app/)**
 
 Backend:
-____________________________________________
+**[https://the-project-deadline-tracker.onrender.com/](https://the-project-deadline-tracker.onrender.com/)**
 
 Backend API: Hosted on Render
 
